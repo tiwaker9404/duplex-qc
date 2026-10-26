@@ -1,0 +1,38 @@
+# Example acceptance spec for a full-duplex speech model training set.
+# Each lab writes these differently; the point is that the contract lives
+# in a file both sides can read, diff and version — not in someone's head.
+name: full-duplex-conversational-v1
+description: >
+  Two speakers, one close-talk channel each, unscripted conversation.
+  Needs natural overlap and backchannels for full-duplex training.
+
+format:
+  sample_rates: [16000, 24000, 48000]
+  channels: 2
+  min_bit_depth: 16
+  duration_s: {min: 30, max: 3600}
+
+signal:
+  max_clipping_pct: 0.1        # % of samples at full scale, per channel
+  max_dc_offset: 0.01
+  speech_level_dbfs: {min: -35, max: -8}
+  min_snr_db: 20
+  max_bleed_db: -30            # other speaker's level on this channel
+
+turn_taking:
+  min_speech_ratio: 0.15       # each speaker talks at least 15% of the session
+  min_talk_balance: 0.35       # quieter speaker / louder speaker talk time
+  overlap_ratio: {min: 0.03, max: 0.35}
+  max_mutual_silence_s: 8
+  min_turns_per_min: 4
+
+transcript:
+  required: true
+  min_alignment: 0.80
+  max_offset_s: 0.25
+  min_speech_coverage: 0.85
+  words_per_s: {min: 1.0, max: 5.5}
+
+# Downgrade a check from reject to accept-with-warning.
+severity:
+  dc_offset: warn
